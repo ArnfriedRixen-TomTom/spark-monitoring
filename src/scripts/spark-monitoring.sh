@@ -44,6 +44,9 @@ export LA_SPARKMETRIC_REGEX="app.*\.jvmCpuTime|app.*\.heap.max"
 # export LA_SPARKLOGGINGEVENT_NAME_REGEX="com\.microsoft\.pnp\.samplejob\.StreamingQueryListenerSampleJob|org\.apache\.spark\.util\.Utils.*"
 # export LA_SPARKLOGGINGEVENT_MESSAGE_REGEX=".*StreamingQueryListenerSampleJob|FS_CONF_COMPAT.*"
 
+# Only log messages where the logger name starts with org.apache.spark.metrics.* or __main__
+export LA_SPARKLOGGINGEVENT_NAME_REGEX="org\.apache\.spark\.metrics.*|^__main__$"
+
 # Uncomment the following line to enable local logging to stderr of buffer contents when an exception is hit when sending a buffer to Log Analytics
 # export LA_LOGFAILEDBUFFERSEND=TRUE
 
@@ -67,11 +70,8 @@ METRICS_PROPERTIES=$(cat << EOF
 
 # Enable JvmSource for instance master, worker, driver and executor
 master.source.jvm.class=org.apache.spark.metrics.source.JvmSource
-
 worker.source.jvm.class=org.apache.spark.metrics.source.JvmSource
-
 driver.source.jvm.class=org.apache.spark.metrics.source.JvmSource
-
 executor.source.jvm.class=org.apache.spark.metrics.source.JvmSource
 
 EOF
