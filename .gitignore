@@ -330,3 +330,7 @@ buildNumber.properties
 .classpath
 .project
 .settings
+
+
+# Metals
+.metals/
