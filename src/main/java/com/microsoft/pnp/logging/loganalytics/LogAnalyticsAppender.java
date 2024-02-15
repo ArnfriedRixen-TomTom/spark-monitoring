@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
         printObject = true)
 public class LogAnalyticsAppender extends AbstractAppender {
 
+    private static final String LA_SPARKLOGGINGEVENT_NAME_REGEX=System.getenv().getOrDefault("LA_SPARKLOGGINGEVENT_NAME_REGEX", "");
+
     private static final String DEFAULT_LOG_TYPE = "SparkLoggingEvent";
     // We will default to environment so the properties file can override
     private final String workspaceId = LogAnalyticsEnvironment.getWorkspaceId();
@@ -75,10 +77,20 @@ public class LogAnalyticsAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent logEvent) {
+        String loggerName = logEvent.getLoggerName();
+
         if (!this.isStarted()) {
             LOGGER.warn("Appender not initialized yet ...");
             return;
         }
+
+        // Implement the filtering logic based on LA_SPARKLOGGINGEVENT_NAME_REGEX to deny logs where the name doesn't match the regex
+        if (!LA_SPARKLOGGINGEVENT_NAME_REGEX.isEmpty()) {
+            if (loggerName == null || !loggerName.matches(LA_SPARKLOGGINGEVENT_NAME_REGEX)) {
+                return; // Skip this log event if logger name doesn't match the regex
+            }
+        }
+        
         try {
             String message = new String(this.getLayout().toByteArray(logEvent));
             this.client.sendMessage(message, "timestamp");
