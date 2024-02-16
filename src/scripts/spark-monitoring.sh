@@ -44,8 +44,8 @@ export LA_SPARKMETRIC_REGEX="app.*\.jvmCpuTime|app.*\.heap.max"
 # export LA_SPARKLOGGINGEVENT_NAME_REGEX="com\.microsoft\.pnp\.samplejob\.StreamingQueryListenerSampleJob|org\.apache\.spark\.util\.Utils.*"
 # export LA_SPARKLOGGINGEVENT_MESSAGE_REGEX=".*StreamingQueryListenerSampleJob|FS_CONF_COMPAT.*"
 
-# Only log messages where the logger name starts with org.apache.spark.metrics.* or __main__
-export LA_SPARKLOGGINGEVENT_NAME_REGEX="org\.apache\.spark\.metrics.*|^__main__$"
+# Only log messages where the logger name starts with org.apache.spark.metrics.* or UnifiedLogger
+export LA_SPARKLOGGINGEVENT_NAME_REGEX="org\.apache\.spark\.metrics.*|^UnifiedLogger.*$"
 
 # Uncomment the following line to enable local logging to stderr of buffer contents when an exception is hit when sending a buffer to Log Analytics
 # export LA_LOGFAILEDBUFFERSEND=TRUE
