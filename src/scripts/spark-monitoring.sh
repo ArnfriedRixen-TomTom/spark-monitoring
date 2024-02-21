@@ -29,13 +29,15 @@ export AZ_RSRC_NAME=$AZ_RSRC_NAME
 # after your expression.
 
 # Add a quoted regex value to filter the events for SparkListenerEvent_CL, the log will only include events where Event_s matches the regex.
-# Commented example below will only log events for SparkListenerJobStart, SparkListenerJobEnd, or where "org.apache.spark.sql.execution.ui."
-# is is the start of the event name.
-# export LA_SPARKLISTENEREVENT_REGEX="SparkListenerJobStart|SparkListenerJobEnd|org\.apache\.spark\.sql\.execution\.ui\..*"
+# Filter the events for SparkListenerEvent_CL, the log will only include events where Event_s ends with SparkListenerApplicationStart
+export LA_SPARKLISTENEREVENT_REGEX=".*SparkListenerApplicationStart$"
 
 # Add a quoted regex value to filter the events for SparkMetric_CL, the log will only include events where name_s matches the regex.
 # Only log metrics where the name begins with app and ends in .jvmCpuTime or .heap.max.
-export LA_SPARKMETRIC_REGEX="app.*\.jvmCpuTime|app.*\.heap.max"
+# export LA_SPARKMETRIC_REGEX="app.*\.jvmCpuTime|app.*\.heap.max"
+
+# Only log spark metrics where the names contain 'driver.executor.bytesRead' or 'driver.executor.bytesWritten'
+export LA_SPARKMETRIC_REGEX="driver\.executor\.bytes(Read|Written)"
 
 # Add a quoted regex value to filter the events for SparkLoggingEvent_CL, the log will only include events where logger_name_s matches the name regex
 # or where the Message matches the message regex.  If both are specified, then both must be matched for the log to be sent.
@@ -44,8 +46,8 @@ export LA_SPARKMETRIC_REGEX="app.*\.jvmCpuTime|app.*\.heap.max"
 # export LA_SPARKLOGGINGEVENT_NAME_REGEX="com\.microsoft\.pnp\.samplejob\.StreamingQueryListenerSampleJob|org\.apache\.spark\.util\.Utils.*"
 # export LA_SPARKLOGGINGEVENT_MESSAGE_REGEX=".*StreamingQueryListenerSampleJob|FS_CONF_COMPAT.*"
 
-# Only log messages where the logger name starts with org.apache.spark.metrics.* or UnifiedLogger
-export LA_SPARKLOGGINGEVENT_NAME_REGEX="org\.apache\.spark\.metrics.*|^UnifiedLogger.*$"
+# Only log messages where the logger name starts with UnifiedLogger
+export LA_SPARKLOGGINGEVENT_NAME_REGEX="^UnifiedLogger.*$"
 
 # Uncomment the following line to enable local logging to stderr of buffer contents when an exception is hit when sending a buffer to Log Analytics
 # export LA_LOGFAILEDBUFFERSEND=TRUE
