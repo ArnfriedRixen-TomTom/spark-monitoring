@@ -22,6 +22,10 @@ class DatabricksListener extends SparkListener {
 
   private val LOGGER = LogManager.getLogger();
 
+  // Retrieve the filterRegex from the environment variable
+  private var filterRegex = sys.env.getOrElse("LA_SPARKLISTENEREVENT_REGEX", "")
+
+
   override def onJobStart(jobStart: SparkListenerJobStart): Unit = {
     processEvent(jobStart)
   }
@@ -34,17 +38,21 @@ class DatabricksListener extends SparkListener {
     val formattedClassName = SparkListenerJobEnd.getClass.getName.replace("$", "")
 
     val event = Map("Event" -> formattedClassName, "jobId" -> jobEnd.jobId.toString, "time" -> jobEnd.time.toString, "jobResult" -> jobResult)
-
-    try {
-      val json = ListenerUtils.parse(event)
-      ListenerUtils.sendEvent(json)
-    } catch {
-      case e: Exception =>
-        LOGGER.error("Could not parse event " + formattedClassName)
-        LOGGER.error(e.getMessage)
+    
+    // Check if the regex pattern is empty or if the event name matches the regex
+    if (filterRegex == "" || formattedClassName.matches(filterRegex)) {
+      try {
+        val json = ListenerUtils.parse(event)
+        ListenerUtils.sendEvent(json)
+      } catch {
+        case e: Exception =>
+          LOGGER.error("Could not parse event " + formattedClassName)
+          LOGGER.error(e.getMessage)
+      } 
+    } else {
+      // silently ignore the event
     }
   }
-
   override def onApplicationStart(applicationStart: SparkListenerApplicationStart): Unit = {
     processEvent(applicationStart)
   }
@@ -55,12 +63,18 @@ class DatabricksListener extends SparkListener {
 
 
   private def processEvent(listenerEvent: SparkListenerEvent): Unit = {
-    try {
-      ListenerUtils.sendListenerEventToLA(listenerEvent)
-    } catch {
-      case e: Exception =>
-        LOGGER.error("Could not parse event " + listenerEvent.getClass.getName)
-        LOGGER.error(e.getMessage)
+    val eventSimpleName = listenerEvent.getClass.getSimpleName
+    // Check if the regex pattern is empty or if the event name matches the regex
+    if (filterRegex=="" || eventSimpleName.matches(filterRegex)) {
+      try {
+        ListenerUtils.sendListenerEventToLA(listenerEvent)
+      } catch {
+        case e: Exception =>
+          LOGGER.error("Could not parse event " + listenerEvent.getClass.getName)
+          LOGGER.error(e.getMessage)
+      }
+    } else {
+      // silently ignore the event
     }
   }
 }
